@@ -11,6 +11,15 @@ var ExceptionHandler = require('../exception/exception-handler');
 router.post("/user", function (req, res) {
     console.log("new user started!");
     console.log("req:", req.body);
+    var emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if(!emailFormat.test(String(req.body.email).toLowerCase)){
+        return res.status(403).send({
+            code: 403, 
+            message: "INVALID_EMAIL",
+            description: "Email not valid, please try again use a valid one",
+            date: new Date().toISOString()
+        });
+    }
     AuthModel.create({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -23,19 +32,22 @@ router.post("/user", function (req, res) {
                 console.log("Error :::::")
                 if (err.name == "MongoError" && err.message.includes('duplicate key')) {
                     console.log({
-                        code: 403, 
-                        message: "Cannot insert duplicated emails on database",
+                        code: 403,
+                        message: "DUPLICATED_EMAIL",
+                        description: "Cannot insert duplicated emails on database",
                         date: new Date().toISOString()
                     });
                     return res.status(403).send({
-                        code: 403, 
-                        message: "Cannot insert duplicated emails on database", 
+                        code: 403,
+                        message: "DUPLICATED_EMAIL",
+                        description: "Cannot insert duplicated emails on database", 
                         date: new Date().toISOString()
                     });
                 }else{
                     return res.status(500).send({
                         code: 500, 
-                        message: "Generic error from api", 
+                        message: "INTERNAL_SERVER_ERROR",
+                        description: "Generic error from api", 
                         date: new Date().toISOString()
                     });
                 }
@@ -52,7 +64,8 @@ router.get('/users', function(req, res){
         if(err){
             return res.status(500).send({
                 code: 500, 
-                message: "Generic error from api", 
+                message: "INTERNAL_SERVER_ERROR",
+                description: "Generic error from api", 
                 date: new Date().toISOString()
             });
         }
