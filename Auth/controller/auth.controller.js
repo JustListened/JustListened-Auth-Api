@@ -6,16 +6,17 @@ router.use(bodyParser.json());
 
 var AuthModel = require('../model/auth.model');
 var ExceptionHandler = require('../exception/exception-handler');
+
 // Create User
-router.post("/user", function (request, response) {
+router.post("/user", function (req, res) {
     console.log("new user started!");
-    console.log("request:", request.body);
+    console.log("req:", req.body);
     AuthModel.create({
-        firstName: request.body.firstName,
-        lastName: request.body.lastName,
-        dob: request.body.dob,
-        email: request.body.email,
-        password: request.body.password,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        dob: req.body.dob,
+        email: req.body.email,
+        password: req.body.password,
     },
         function (err, user) {
             if (err){
@@ -26,13 +27,13 @@ router.post("/user", function (request, response) {
                         message: "Cannot insert duplicated emails on database",
                         date: new Date().toISOString()
                     });
-                    return response.status(403).send({
+                    return res.status(403).send({
                         code: 403, 
                         message: "Cannot insert duplicated emails on database", 
                         date: new Date().toISOString()
                     });
                 }else{
-                    return response.status(500).send({
+                    return res.status(500).send({
                         code: 500, 
                         message: "Generic error from api", 
                         date: new Date().toISOString()
@@ -41,8 +42,22 @@ router.post("/user", function (request, response) {
             }
             console.log("Reponse OK :::::")
             console.log(user);
-            response.status(200).send(user);
+            res.status(201).send(user);
         });
+});
+
+// LIST ALL USERS
+router.get('/users', function(req, res){
+    AuthModel.find(function(err, users){
+        if(err){
+            return res.status(500).send({
+                code: 500, 
+                message: "Generic error from api", 
+                date: new Date().toISOString()
+            });
+        }
+        res.status(200).send(users);
+    });
 });
 
 module.exports = router;
