@@ -11,8 +11,8 @@ var ExceptionHandler = require('../exception/exception-handler');
 router.post("/user", function (req, res) {
     console.log("new user started!");
     console.log("req:", req.body);
-    var emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if(!emailFormat.test(String(req.body.email).toLowerCase)){
+    var emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if(!req.body.email.match(emailFormat)){
         return res.status(403).send({
             code: 403, 
             message: "INVALID_EMAIL",
@@ -29,28 +29,7 @@ router.post("/user", function (req, res) {
     },
         function (err, user) {
             if (err){
-                console.log("Error :::::")
-                if (err.name == "MongoError" && err.message.includes('duplicate key')) {
-                    console.log({
-                        code: 403,
-                        message: "DUPLICATED_EMAIL",
-                        description: "Cannot insert duplicated emails on database",
-                        date: new Date().toISOString()
-                    });
-                    return res.status(403).send({
-                        code: 403,
-                        message: "DUPLICATED_EMAIL",
-                        description: "Cannot insert duplicated emails on database", 
-                        date: new Date().toISOString()
-                    });
-                }else{
-                    return res.status(500).send({
-                        code: 500, 
-                        message: "INTERNAL_SERVER_ERROR",
-                        description: "Generic error from api", 
-                        date: new Date().toISOString()
-                    });
-                }
+                return ExceptionHandler(err,res);
             }
             console.log("Reponse OK :::::")
             console.log(user);
@@ -62,12 +41,7 @@ router.post("/user", function (req, res) {
 router.get('/users', function(req, res){
     AuthModel.find(function(err, users){
         if(err){
-            return res.status(500).send({
-                code: 500, 
-                message: "INTERNAL_SERVER_ERROR",
-                description: "Generic error from api", 
-                date: new Date().toISOString()
-            });
+            ExceptionHandler(err,res);
         }
         res.status(200).send(users);
     });
