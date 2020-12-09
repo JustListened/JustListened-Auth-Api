@@ -1,0 +1,29 @@
+{
+  "name": "justlistened-auth-api",
+  "version": "1.0.0",
+  "description": "Authorization and Sign Up api for Just Listened app.",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JustListened/JustListened-Auth-Api.git"
+  },
+  "author": "JustListened",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JustListened/JustListened-Auth-Api/issues"
+  },
+  "homepage": "https://github.com/JustListened/JustListened-Auth-Api#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongodb": "^3.6.3",
+    "mongoose": "^5.10.18"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.10"
+  }
+}
