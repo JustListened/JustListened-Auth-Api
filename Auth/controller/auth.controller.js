@@ -11,15 +11,6 @@ var ExceptionHandler = require('../exception/exception-handler');
 router.post("/user", function (req, res) {
     console.log("new user started!");
     console.log("req:", req.body);
-    var emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if(!req.body.email.match(emailFormat)){
-        return res.status(403).send({
-            code: 403, 
-            message: "INVALID_EMAIL",
-            description: "Email not valid, please try again use a valid one",
-            date: new Date().toISOString()
-        });
-    }
     AuthModel.create({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -31,8 +22,6 @@ router.post("/user", function (req, res) {
             if (err){
                 return ExceptionHandler(err,res);
             }
-            console.log("Reponse OK :::::")
-            console.log(user);
             res.status(201).send(user);
         });
 });
@@ -41,7 +30,7 @@ router.post("/user", function (req, res) {
 router.get('/users', function(req, res){
     AuthModel.find(function(err, users){
         if(err){
-            ExceptionHandler(err,res);
+            return ExceptionHandler(err,res);
         }
         res.status(200).send(users);
     });
